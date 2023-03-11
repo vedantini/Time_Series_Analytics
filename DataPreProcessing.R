@@ -1,16 +1,15 @@
-DP <- function(data){
+DP <- function(input.data){
   
-  data$periods <- format(as.Date(data$Date), "%Y-%m")
+  # Creating Period column
+  input.data$Period <- format(as.Date(input.data$Date), "%Y-%m")
   
-  unique_periods = list(unique(data$period))
+  # Selecting required columns
+  input.data <- input.data[,c("Period","Volume")]
   
-  clean_data = data.frame('Periods' = unique_periods[[1]],
-                          'Stock_Prices' = unique_periods[[1]])
+  # Aggregating the data by month
+  input.data <- aggregate(x = input.data[c("Volume")],
+                          FUN = mean,
+                          by = list(Group.date = input.data$Period))
   
-  for(i in 1:length(unique_periods[[1]])){
-    clean_data$Stock_Prices[i] = data[data$period == unique_periods[[1]][i],5][length(data[data$period == unique_periods[[1]][i],5])]
-  }
-  
-  clean_data$Stock_Prices <- sapply(clean_data$Stock_Prices, as.numeric)
-  return(clean_data)
+  return(input.data)
 }
